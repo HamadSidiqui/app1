@@ -5,19 +5,19 @@ from langchain_community.llms import OpenAI
 import os
 
 template = """
- You are a marketing email marketer with 10 years of experience. You are analyzing customer's background to write personalized email content that only this customer will receive; 
+ You are a marketing email writer with 10 years of experience. You are analyzing customer's background to write personalized product description that only this customer will receive; 
     PRODUCT input text: {content};
     CUSTOMER age group (y): {agegroup};
-    CUSTOMER main lifestyle preference: {lifestylepreference};
-    TASK: Write a product description that is tailored into this customer's Age group and lifestyle preference. Use age group specific slang.;
+    CUSTOMER main preference: {preference};
+    TASK: Write a product description that is tailored into this customer's Age group and preference. Use age group specific slang.;
     FORMAT: Present the result in the following order: (PRODUCT DESCRIPTION), (BENEFITS), (USE CASE);
     PRODUCT DESCRIPTION: describe the product in 5 sentences;
-    BENEFITS: describe in 3 sentences why this product is perfect considering customers age group and lifestyle preference;
-    USE CASE: write a story in 5 sentences, of an example weekend activity taking into account lifestyle preference {lifestylepreference} and age {agegroup}, write a story in first person, example "I started my Saturday morning with ...";
+    BENEFITS: describe in 3 sentences why this product is perfect considering customers age group and preference;
+    USE CASE: write a story in 5 sentences, of an example weekend activity taking into account preference {preference} and age {agegroup}, write a story in first person, example "I started my Saturday morning with ...";
 """
 
 prompt = PromptTemplate(
-    input_variables=["agegroup", "lifestylepreference", "content"],
+    input_variables=["agegroup", "preference", "content"],
     template=template,
 )
 
@@ -38,7 +38,7 @@ with col1:
     4) kopeeri ükshaaval tarbijasegmentide lõikes äpi väljundteksti kõnealuse toote tutvustuslehele.")
 
 with col2:
-    st.image(image='companylogo.png', caption='Only the most exotic sauces')
+    st.image(image='companylogo.png', caption='Sauces made healthy')
 
 st.markdown("## Enter Your Content To Convert")
 
@@ -58,11 +58,11 @@ with col1:
         'Which age group would you like your content to target?',
         ('9-15', '16-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80-100'))
     
-def get_hobby():
-    input_text = st.text_input(label="Customers main lifestylepreference", key="lifestylepreference")
+def get_preference():
+    input_text = st.text_input(label="Customers main preference", key="preference_input")
     return input_text
 
-hobby_input = get_hobby()
+preference_input = get_preference()
 
 def get_text():
     input_text = st.text_area(label="Content Input", label_visibility='collapsed', placeholder="Your content...", key="content_input")
@@ -76,7 +76,7 @@ if len(content_input.split(" ")) > 700:
 
 def update_text_with_example():
     print ("in updated")
-    st.session_state.content_input = "Artisan Hot Sauce, all spice levels, herbal, responsible manufacturing"
+    st.session_state.content_input = "sauces, all flavours, hot, healthy ingredients"
 
 st.button("*GENERATE TEXT*", type='secondary', help="Click to see an example of the content you will be converting.", on_click=update_text_with_example)
 
@@ -89,7 +89,7 @@ if content_input:
 
     llm = load_LLM(openai_api_key=openai_api_key)
 
-    prompt_with_content = prompt.format(agegroup=option_agegroup, lifestylepreference=lifestylepreference_input, content=content_input)
+    prompt_with_content = prompt.format(agegroup=option_agegroup, preference=preference_input, content=content_input)
 
     formatted_content = llm(prompt_with_content)
 
